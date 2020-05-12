@@ -1,0 +1,9 @@
+note over browser:
+browser add a new note (what your input)
+to the page used by javascript-code,
+browser create a POST request to save the note
+to the server.
+end note
+
+browser->server: HTTP POST https://fullstack-example.now.sh/new_note_spa
+server-->browser: Json Message(whether note is created)
