@@ -3,13 +3,18 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
+
 import personsService from './services/persons'
+
+import './index.css'
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filterName, setFilterName] = useState('')
+    const [notification, setNotification] = useState({ messageType: null, message: null })
 
     useEffect(() => {
         personsService
@@ -45,7 +50,7 @@ const App = () => {
 
         const personsWithSameName = persons.filter(person => newName === person.name)
         console.log('same name', personsWithSameName.length)
-        
+
         if (personsWithSameName.length !== 0) {
             const result = window.confirm(`${newName} is aleardy added to phonebook, replace the old number with new one?`)
             if (result) {
@@ -56,7 +61,16 @@ const App = () => {
                         setPersons(persons.map(person => id === person.id ? returnPerson : person))
                     })
                     .catch(error => {
-                        alert(`update error.`)
+                        setNotification(
+                            {
+                                messageType: 'error',
+                                message: `Information of ${newName} has already been removed from server`
+                            }
+                        )
+                        setPersons(persons.filter(person => person.id !== id))
+                        setTimeout(() => {
+                            setNotification({messageType: null, message: null})
+                        }, 5000)
                     })
             }
         } else {
@@ -64,6 +78,15 @@ const App = () => {
                 .create(newPerson)
                 .then(returnPerson => {
                     setPersons(persons.concat(returnPerson))
+                    setNotification(
+                        {
+                            messageType: 'info',
+                            message: `Added ${newPerson.name}`
+                        }
+                    )
+                    setTimeout(() => {
+                        setNotification({messageType: null, message: null})
+                    }, 2000)
                 })
         }
     }
@@ -91,6 +114,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification notification={notification} />
             <Filter handleFilterChange={handleFilterChange} />
             <h2>add a new</h2>
             <PersonForm
