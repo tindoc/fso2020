@@ -88,6 +88,18 @@ const App = () => {
                         setNotification({messageType: null, message: null})
                     }, 2000)
                 })
+                .catch(error => {
+                    console.log(error.response.data)
+                    setNotification(
+                        {
+                            messageType: 'error',
+                            message: error.response.data.error
+                        }
+                    )
+                    setTimeout(() => {
+                        setNotification({messageType: null, message: null})
+                    }, 2000)
+                })
         }
     }
 
